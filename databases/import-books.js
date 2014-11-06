@@ -1,0 +1,62 @@
+/***
+ * Excerpted from "Node.js the Right Way",
+ * published by The Pragmatic Bookshelf.
+ * Copyrights apply to this code. It may not be used to create training material, 
+ * courses, books, articles, and the like. Contact us if you are in doubt.
+ * We make no guarantees that this code is fit for any purpose. 
+ * Visit http://www.pragmaticprogrammer.com/titles/jwnode for more book information.
+***/
+'use strict';
+const
+  request = require('request'),
+  fs = require('fs'),
+  async = require('async'),
+  file = require('file'),
+  rdfParser = require('./lib/rdf-parser.js'),
+  
+  work = async.queue(function(path, done) {
+  
+    let fn = (function(err, doc) {
+      request({
+        method: 'PUT',
+        url: 'http://localhost:5984/books/' + doc._id,
+        json: doc
+      }, function(err, res, body) {
+        if (err) {
+            console.log(err);
+          if (err.code == "EPIPE")
+          {
+            console.log("emfile err 1");
+          }
+          
+          throw err;
+        }
+        console.log(res.statusCode, body);
+        done();
+      });
+    });
+    
+    try {
+      rdfParser(path, fn);
+    } catch (err)
+    {
+      console.log("caught err 2");
+      if (err.code == "EPIPE")
+      {
+        console.log("emfile err");
+      }
+    }
+  }, 10);
+
+console.log('beginning directory walk');
+
+let sPath = __dirname + '/cache';
+sPath = fs.readlinkSync(sPath) || sPath;
+
+file.walk(sPath, function(err, dirPath, dirs, files){
+  files.forEach(function(path){
+    work.push(path);
+  });
+});
+
+

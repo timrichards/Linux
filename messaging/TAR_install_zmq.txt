@@ -1,0 +1,2 @@
+Create the following file: /etc/ld.so.conf.d/zmq.conf
+The contents of the above file is '/usr/local/lib'.

@@ -1,0 +1,9 @@
+{
+  "name": "book-tools",
+  "version": "0.1.0",
+  "decription": "Tools for creating an ebook database.",
+  "author": "Tim Richards <rwccal@gmail.com> (http://www.timrichardsmusic.com)",
+  "dependencies": {
+    "request": "~2.39.0"
+  }
+}
